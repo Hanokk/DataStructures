@@ -48,7 +48,6 @@ node *InorderSuccessor(node *current)
 {
 	if (current->left==NULL)
 	{
-		printf("Hola\n");
 		 return current;
 	}
 	else
@@ -108,15 +107,35 @@ node *Delete(node *root,int val)
     return root;
 }
 
+int Height(node *Head)
+{
+    int lheight=0,rheight=0;
+	if(Head==NULL)
+	{
+		return 0;
+	}
+	lheight=Height(Head->left)+1;
+	rheight=Height(Head->right)+1;
+    if (lheight>rheight)
+    {
+        return lheight;
+    }
+    else
+    {
+	   return rheight;
+    }
+}
+
 int main()
 {
     int n,val;
     node *root;
     node *newnode;
     root=NULL;
+    int height=0;
     while(1)
     {
-    printf("Take any operation\n1.Insert\n2.Delete\n3.Print\n4.Exit");
+    printf("Take any operation\n1.Insert\n2.Delete\n3.Print\n4.Exit\n5.Height");
     scanf("%d",&n);
     switch(n)
     {
@@ -143,7 +162,13 @@ int main()
             break;
 
         case 4:
+            height=Height(root);
+            printf("%d\n",height);
+            break;
+
+        case 5:
             exit(0);
+
     }
     }
     return 0;
