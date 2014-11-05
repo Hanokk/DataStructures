@@ -84,7 +84,6 @@ node *Delete(node *root,int val)
        		{
         		node *temp;
  	           	temp=InorderSuccessor(root->right);
- 	           	printf("hey");
                 temp->left=root->left;
                 temp->right=root->right;
                 free(root);
