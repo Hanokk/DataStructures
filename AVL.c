@@ -55,7 +55,7 @@ node *Insert(node *root,node *newnode)
             	else
             	{
             		temp=root->left->right;
-            		root->left=temp->left;
+            		root->left->right=temp->left;
             		temp->left=root->left;
             		root->left=temp->right;
             		temp->right=root;
@@ -79,7 +79,7 @@ node *Insert(node *root,node *newnode)
             	else
             	{
             		temp=root->right->left;
-            		root->right=temp->right;
+            		root->right->left=temp->right;
             		temp->right=root->right;
             		root->right=temp->left;
             		temp->left=root;
@@ -91,9 +91,116 @@ node *Insert(node *root,node *newnode)
     return root;
 }
 
-node *Delete()
+node *InorderSuccessor(node *current)
 {
+	if (current->left==NULL)
+	{
+		 return current;
+	}
+	else
+	{
+		current=InorderSuccessor(current->left);
+	}
+	return current;
+}
 
+node *Delete(node *root,int value)
+{
+    if (root->data==value)
+    {
+        if (root->left==NULL)
+        {
+            if (root->right==NULL)
+            {
+            	free(root);
+                root=NULL;
+            }
+            else
+            {
+             	root=root->right;   
+            }
+        }
+        else
+        {
+        	if (root->right->left==NULL)
+        	{
+        		root->right->left=root->left;
+        		root=root->right;
+        	}
+        		else
+       		{
+        		node *temp;
+ 	           	temp=InorderSuccessor(root->right);
+                temp->left=root->left;
+                temp->right=root->right;
+                free(root);
+                root=temp;
+                root=Delete(root,temp->data);
+           	}
+        }
+    }
+    else
+    {
+        if (root->data>value)
+        {
+            root->left=Delete(root->left,value);
+            node *temp;
+            if (Height(root->left)-Height(root->right)==-2)
+            {
+            	int R=(Height(root->right->left)-Height(root->right->right));
+            	if(R==0 || R==1) 
+            	{
+            		temp=root->right;
+            		root->right=temp->left;
+            		temp->left=root;
+            		root=temp;
+            	}
+            	else if (R==-1)
+            	{
+            		temp=root->right->left;
+            		root->right->left=temp->right;
+            		temp->right=root->right;
+            		root->right=temp->left;
+            		temp->left=root;
+            		root=temp;
+            	}
+            	else
+            	{
+            		printf("something's wrong\n");
+            	}
+            }
+        }
+        else
+        {
+            root->right=Delete(root->right,value);
+            node *temp;
+            if (Height(root->left)-Height(root->right)==2)
+            {
+            	int R=Height(root->left->left)-Height(root->left->right);
+            	if(R==0 || R==1) 
+            	{
+            		temp=root->left;
+            		root->left=temp->right;
+            		temp->right=root;
+            		root=temp;
+            	}
+            	else if (R==-1)
+            	{
+            		temp=root->left->right;
+            		root->left->right=temp->left;
+            		temp->left=root->left;
+            		root->left=temp->right;
+            		temp->right=root;
+            		root=temp;
+            	}
+            	else
+            	{
+            		printf("something's wrong\n");
+            	}
+            }
+        }
+    }
+    return root;
 }
 
 void Print(node *root)
@@ -105,7 +212,7 @@ void Print(node *root)
     else
     {
         Print(root->left);
-        printf("%d\t%d\n",root->data,root->weight);
+        printf("%d\n",root->data);
         Print(root->right);
     }
 }
@@ -114,10 +221,10 @@ int main(int argc, char const *argv[])
 {
 	node *root,*newnode;
 	root=NULL;
-	int option,value;
+	int option,value,height;
 	while(1)
 	{
-		printf("Enter the operations\n1.Insert\n2.Delete\n3.Print");
+		printf("Enter the operations\n1.Insert\n2.Delete\n3.Print\n4.Height\n5.Exit");
 		scanf("%d",&option);
 		switch(option)
 		{
@@ -130,16 +237,21 @@ int main(int argc, char const *argv[])
 	            newnode->data=value;
 	            newnode->left=NULL;
 	            newnode->right=NULL;
-	            newnode->weight=0;
 	            root=Insert(root,newnode);
 				break;
 			case 2:
-				Delete();
+				printf("Enter the value to be deleted\n");
+				scanf("%d",&value);
+				Delete(root,value);
 				break;
 			case 3:
 				Print(root);
 				break;
 			case 4:
+				height=Height(root);
+				printf("%d\n",height);
+				break;
+			case 5:
 				exit(0);
 		}
 	}
